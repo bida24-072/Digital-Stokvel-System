@@ -11,10 +11,7 @@ const STORAGE_KEY = "motsheloData";
 function loadStore() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-        return {
-            groups: [],
-            activeGroupId: null
-        };
+        return { groups: [], activeGroupId: null };
     }
     try {
         return JSON.parse(raw);
@@ -48,7 +45,7 @@ function formatDate(iso) {
 
 function initials(name) {
     if (!name) return "??";
-    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    return name.split(' ').map(function(n) { return n[0]; }).join('').toUpperCase().slice(0, 2);
 }
 
 function showToast(msg, type) {
@@ -76,7 +73,22 @@ function getGroup(id) {
 }
 
 function getActiveGroup() {
-    return store.activeGroupId ? getGroup(store.activeGroupId) : null;
+    if (store.activeGroupId) {
+        const g = getGroup(store.activeGroupId);
+        if (g) return g;
+    }
+    // Fallback: read from URL
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+    if (id) {
+        const g = getGroup(id);
+        if (g) {
+            store.activeGroupId = id;
+            saveStore();
+            return g;
+        }
+    }
+    return null;
 }
 
 /* ============================================
@@ -133,7 +145,6 @@ function createGroup(e) {
     closeCreateGroup();
     showToast('Group "' + name + '" created', "success");
 
-    // Redirect to group view
     setTimeout(function() {
         window.location.href = "group.html?id=" + group.id;
     }, 400);
@@ -164,7 +175,6 @@ function addMember(e) {
     const name = document.getElementById("m-name").value.trim();
     const phoneEl = document.getElementById("m-phone");
     const phone = phoneEl ? phoneEl.value.trim() : "";
-    const position = group.members.length;
 
     if (!name) {
         showToast("Enter member name", "error");
@@ -176,7 +186,7 @@ function addMember(e) {
         name: name,
         phone: phone,
         joinedAt: new Date().toISOString(),
-        position: position,
+        position: group.members.length,
         received: false
     };
 
@@ -192,29 +202,32 @@ function addMember(e) {
 }
 
 /* ============================================
-   RECORD PAYMENT
+   RECORD PAYMENT (with proof of payment)
 ============================================ */
+let pendingProofData = null;
+
 function openRecordPayment(memberId) {
     const group = getActiveGroup();
     if (!group) return;
 
-    // If no active group, try to get from URL
-    let actualGroup = group;
-    if (!actualGroup) {
-        const params = new URLSearchParams(window.location.search);
-        const id = params.get("id");
-        if (id) actualGroup = getGroup(id);
-    }
-    if (!actualGroup) return;
-
-    const member = actualGroup.members.find(function(m) { return m.id === memberId; });
+    const member = group.members.find(function(m) { return m.id === memberId; });
     if (!member) return;
 
     document.getElementById("payment-member-id").value = memberId;
     document.getElementById("payment-member-name").textContent = member.name;
-    document.getElementById("payment-amount").value = actualGroup.contribution;
+    document.getElementById("payment-amount").value = group.contribution;
     document.getElementById("payment-date").value = new Date().toISOString().split('T')[0];
     document.getElementById("payment-note").value = "";
+
+    // Reset proof
+    pendingProofData = null;
+    const preview = document.getElementById("proof-preview");
+    if (preview) {
+        preview.style.display = "none";
+        preview.innerHTML = "";
+    }
+    const proofInput = document.getElementById("payment-proof");
+    if (proofInput) proofInput.value = "";
 
     const modal = document.getElementById("record-payment-modal");
     if (modal) modal.classList.add("open");
@@ -223,18 +236,47 @@ function openRecordPayment(memberId) {
 function closeRecordPayment() {
     const modal = document.getElementById("record-payment-modal");
     if (modal) modal.classList.remove("open");
+    pendingProofData = null;
+}
+
+function handleProofUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+        showToast("Image too large — max 2MB", "error");
+        e.target.value = "";
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        pendingProofData = ev.target.result;
+        const preview = document.getElementById("proof-preview");
+        if (preview) {
+            preview.style.display = "block";
+            preview.innerHTML =
+                '<img src="' + pendingProofData + '" alt="Proof">' +
+                '<button type="button" class="btn btn-sm btn-danger" onclick="removeProof()"><i class="fas fa-times"></i> Remove Proof</button>';
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+function removeProof() {
+    pendingProofData = null;
+    const preview = document.getElementById("proof-preview");
+    if (preview) {
+        preview.style.display = "none";
+        preview.innerHTML = "";
+    }
+    const proofInput = document.getElementById("payment-proof");
+    if (proofInput) proofInput.value = "";
 }
 
 function recordPayment(e) {
     e.preventDefault();
-
-    // Get active group, fall back to URL group
-    let group = getActiveGroup();
-    if (!group) {
-        const params = new URLSearchParams(window.location.search);
-        const id = params.get("id");
-        if (id) group = getGroup(id);
-    }
+    const group = getActiveGroup();
     if (!group) return;
 
     const memberId = document.getElementById("payment-member-id").value;
@@ -254,7 +296,10 @@ function recordPayment(e) {
         amount: amount,
         date: date,
         method: method,
-        note: note
+        note: note,
+        proof: pendingProofData,
+        status: pendingProofData ? "pending" : "confirmed",
+        uploadedAt: new Date().toISOString()
     });
 
     saveStore();
@@ -266,18 +311,66 @@ function recordPayment(e) {
     }
 }
 
+function approvePayment(paymentId) {
+    const group = getActiveGroup();
+    if (!group) return;
+    const payment = group.payments.find(function(p) { return p.id === paymentId; });
+    if (!payment) return;
+
+    payment.status = "confirmed";
+    payment.approvedAt = new Date().toISOString();
+    saveStore();
+    showToast("Payment approved", "success");
+    if (typeof renderGroupPage === "function") renderGroupPage();
+}
+
+function rejectPayment(paymentId) {
+    const group = getActiveGroup();
+    if (!group) return;
+    const payment = group.payments.find(function(p) { return p.id === paymentId; });
+    if (!payment) return;
+
+    if (!confirm("Reject this payment? The proof will be marked as rejected.")) return;
+
+    payment.status = "rejected";
+    payment.rejectedAt = new Date().toISOString();
+    saveStore();
+    showToast("Payment rejected", "success");
+    if (typeof renderGroupPage === "function") renderGroupPage();
+}
+
+function viewProof(paymentId) {
+    const group = getActiveGroup();
+    if (!group) return;
+    const payment = group.payments.find(function(p) { return p.id === paymentId; });
+    if (!payment || !payment.proof) return;
+
+    let overlay = document.getElementById("proof-lightbox");
+    if (!overlay) {
+        overlay = document.createElement("div");
+        overlay.id = "proof-lightbox";
+        overlay.className = "modal-overlay";
+        overlay.onclick = function(ev) {
+            if (ev.target === overlay) overlay.classList.remove("open");
+        };
+        document.body.appendChild(overlay);
+    }
+    overlay.innerHTML =
+        '<div class="modal" style="max-width:700px; padding:24px;">' +
+            '<button class="modal-close" onclick="document.getElementById(\'proof-lightbox\').classList.remove(\'open\')"><i class="fas fa-times"></i></button>' +
+            '<h2 style="margin-bottom:16px;">Proof of Payment</h2>' +
+            '<img src="' + payment.proof + '" style="width:100%;border-radius:12px;">' +
+            '<p style="color:var(--muted);font-size:0.85rem;margin-top:12px;text-align:center;">Uploaded ' + formatDate(payment.uploadedAt || payment.date) + '</p>' +
+        '</div>';
+    overlay.classList.add("open");
+}
+
 /* ============================================
    MARK MEMBER AS RECEIVED
 ============================================ */
 function markReceived(memberId) {
-    let group = getActiveGroup();
-    if (!group) {
-        const params = new URLSearchParams(window.location.search);
-        const id = params.get("id");
-        if (id) group = getGroup(id);
-    }
+    const group = getActiveGroup();
     if (!group) return;
-
     const member = group.members.find(function(m) { return m.id === memberId; });
     if (!member) return;
 
@@ -293,24 +386,15 @@ function markReceived(memberId) {
     group.currentTurnIndex += 1;
     saveStore();
     showToast(member.name + " received their payout", "success");
-
-    if (typeof renderGroupPage === "function") {
-        renderGroupPage();
-    }
+    if (typeof renderGroupPage === "function") renderGroupPage();
 }
 
 /* ============================================
    DELETE MEMBER
 ============================================ */
 function deleteMember(memberId) {
-    let group = getActiveGroup();
-    if (!group) {
-        const params = new URLSearchParams(window.location.search);
-        const id = params.get("id");
-        if (id) group = getGroup(id);
-    }
+    const group = getActiveGroup();
     if (!group) return;
-
     const member = group.members.find(function(m) { return m.id === memberId; });
     if (!member) return;
 
@@ -322,33 +406,21 @@ function deleteMember(memberId) {
 
     saveStore();
     showToast("Member removed", "success");
-
-    if (typeof renderGroupPage === "function") {
-        renderGroupPage();
-    }
+    if (typeof renderGroupPage === "function") renderGroupPage();
 }
 
 /* ============================================
    DELETE PAYMENT
 ============================================ */
 function deletePayment(paymentId) {
-    let group = getActiveGroup();
-    if (!group) {
-        const params = new URLSearchParams(window.location.search);
-        const id = params.get("id");
-        if (id) group = getGroup(id);
-    }
+    const group = getActiveGroup();
     if (!group) return;
-
     if (!confirm("Delete this payment record?")) return;
 
     group.payments = group.payments.filter(function(p) { return p.id !== paymentId; });
     saveStore();
     showToast("Payment deleted", "success");
-
-    if (typeof renderGroupPage === "function") {
-        renderGroupPage();
-    }
+    if (typeof renderGroupPage === "function") renderGroupPage();
 }
 
 /* ============================================
@@ -365,30 +437,14 @@ function deleteGroup(groupId) {
     }
     saveStore();
     showToast("Group deleted", "success");
-
-    if (typeof renderLanding === "function") {
-        renderLanding();
-    }
-}
-
-/* ============================================
-   SELECT GROUP
-============================================ */
-function selectGroup(groupId) {
-    store.activeGroupId = groupId;
-    saveStore();
+    if (typeof renderLanding === "function") renderLanding();
 }
 
 /* ============================================
    SHARE / EXPORT
 ============================================ */
 function copySummary() {
-    let group = getActiveGroup();
-    if (!group) {
-        const params = new URLSearchParams(window.location.search);
-        const id = params.get("id");
-        if (id) group = getGroup(id);
-    }
+    const group = getActiveGroup();
     if (!group) return;
 
     const lines = [];
@@ -418,15 +474,10 @@ function copySummary() {
 }
 
 function exportCSV() {
-    let group = getActiveGroup();
-    if (!group) {
-        const params = new URLSearchParams(window.location.search);
-        const id = params.get("id");
-        if (id) group = getGroup(id);
-    }
+    const group = getActiveGroup();
     if (!group) return;
 
-    const rows = [["Member", "Contribution", "Date", "Method", "Note"]];
+    const rows = [["Member", "Contribution", "Date", "Method", "Note", "Status"]];
     group.payments.forEach(function(p) {
         const member = group.members.find(function(m) { return m.id === p.memberId; });
         rows.push([
@@ -434,7 +485,8 @@ function exportCSV() {
             p.amount.toFixed(2),
             p.date,
             p.method,
-            p.note || ""
+            p.note || "",
+            p.status || "confirmed"
         ]);
     });
 
@@ -463,10 +515,3 @@ function renderAll() {
         renderGroupPage();
     }
 }
-
-/* ============================================
-   INIT
-============================================ */
-document.addEventListener("DOMContentLoaded", function() {
-    // Rendering happens in each page's own script tag
-});
