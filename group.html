@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group — Motshelo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="container nav">
+            <a href="index.html" class="logo">
+                <div class="logo-mark"><i class="fas fa-circle-notch"></i></div>
+                Mot<span>shelo</span>
+            </a>
+            <nav class="nav-links">
+                <a href="index.html">Dashboard</a>
+                <a href="create.html">New Group</a>
+                <a href="report.html">Reports</a>
+                <a href="about.html">About</a>
+            </nav>
+            <div class="nav-actions">
+                <button class="btn btn-outline" onclick="copySummary()">
+                    <i class="fas fa-share-alt"></i> Share
+                </button>
+                <button class="btn" onclick="openAddMember()">
+                    <i class="fas fa-user-plus"></i> Add Member
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- GROUP HEADER -->
+        <section style="padding: 60px 0 40px;">
+            <div class="container">
+                <button class="btn btn-ghost" onclick="window.location.href='index.html'" style="padding-left:0; margin-bottom:20px;">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </button>
+                <div class="section-header" id="group-header"></div>
+            </div>
+        </section>
+
+        <!-- STATS -->
+        <section style="padding-top:0;">
+            <div class="container">
+                <div class="grid-4" id="group-stats"></div>
+            </div>
+        </section>
+
+        <!-- MEMBERS -->
+        <section style="padding-top:40px;">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-label">Members</span>
+                    <h2 class="section-title">Group <em>roster.</em></h2>
+                    <p class="section-sub">Track each member's contributions and rotation status.</p>
+                </div>
+
+                <div id="members-list"></div>
+            </div>
+        </section>
+
+        <!-- PAYMENT HISTORY -->
+        <section style="padding-top:40px;">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-label">Transaction History</span>
+                    <h2 class="section-title">Recent <em>payments.</em></h2>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Member</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th>Method</th>
+                                <th style="text-align:right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="payments-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3>Mot<span>shelo</span></h3>
+                    <p>Digitising Botswana's savings culture. Built in Gaborone. Designed for the way we save together.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="index.html">Dashboard</a></li>
+                        <li><a href="create.html">Create Group</a></li>
+                        <li><a href="report.html">Reports</a></li>
+                        <li><a href="about.html">About</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Help Centre</a></li>
+                        <li><a href="#">WhatsApp</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Privacy</a></li>
+                        <li><a href="#">Terms</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© 2026 Motshelo</span>
+                <span>Built in Botswana</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ADD MEMBER MODAL -->
+    <div class="modal-overlay" id="add-member-modal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeAddMember()"><i class="fas fa-times"></i></button>
+            <h2>Add a Member</h2>
+            <p class="modal-sub">New members are added to the end of the rotation. Their payout comes after everyone else.</p>
+            <form onsubmit="addMember(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="m-name" required placeholder="e.g. Kabelo Mothibi">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number (optional)</label>
+                    <input type="tel" id="m-phone" placeholder="+267 ...">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeAddMember()">Cancel</button>
+                    <button type="submit" class="btn"><i class="fas fa-check"></i> Add Member</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- RECORD PAYMENT MODAL -->
+    <div class="modal-overlay" id="record-payment-modal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeRecordPayment()"><i class="fas fa-times"></i></button>
+            <h2>Record a Payment</h2>
+            <p class="modal-sub">Recording payment for <strong id="payment-member-name" style="color: var(--gold);"></strong></p>
+            <form onsubmit="recordPayment(event)">
+                <input type="hidden" id="payment-member-id">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Amount (Pula)</label>
+                        <input type="number" step="0.01" min="1" id="payment-amount" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="payment-date" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <select id="payment-method">
+                        <option value="cash">Cash</option>
+                        <option value="eft">EFT / Bank Transfer</option>
+                        <option value="orange">Orange Money</option>
+                        <option value="mzaka">MyZaka</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Note (optional)</label>
+                    <input type="text" id="payment-note" placeholder="e.g. Weekly contribution">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeRecordPayment()">Cancel</button>
+                    <button type="submit" class="btn"><i class="fas fa-check"></i> Record Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+    <script>
+        /* ============================================
+           Load active group from URL
+        ============================================ */
+        function getGroupIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get("id");
+        }
+
+        function renderGroupPage() {
+            const groupId = getGroupIdFromUrl();
+            if (!groupId) { window.location.href = "index.html"; return; }
+
+            const group = getGroup(groupId);
+            if (!group) { window.location.href = "index.html"; return; }
+
+            store.activeGroupId = group.id;
+            saveStore();
+
+            // Header
+            document.getElementById("group-header").innerHTML = `
+                <span class="section-label">${group.frequency.charAt(0).toUpperCase() + group.frequency.slice(1)} · ${formatPula(group.contribution)}</span>
+                <h1 style="font-family: var(--display); font-size: clamp(2rem, 5vw, 3.5rem); line-height:1; letter-spacing:-0.03em; margin-bottom:16px;">
+                    ${group.name}
+                </h1>
+                <p class="section-sub">Created ${formatDate(group.createdAt)} · ${group.members.length} members</p>
+            `;
+
+            // Stats
+            const collected = totalCollected(group);
+            const expected = group.members.length * group.contribution;
+            const paidMembers = group.members.filter(m => memberPaid(m.id, group) >= group.contribution).length;
+
+            document.getElementById("group-stats").innerHTML = `
+                <div class="stat-card">
+                    <span class="stat-label">Total Collected</span>
+                    <div class="stat-value gold">${formatPula(collected)}</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Expected</span>
+                    <div class="stat-value">${formatPula(expected)}</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Members Paid</span>
+                    <div class="stat-value green">${paidMembers} / ${group.members.length}</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Next Rotation</span>
+                    <div class="stat-value blue">${group.members[group.currentTurnIndex] ? group.members[group.currentTurnIndex].name.split(' ')[0] : '—'}</div>
+                </div>
+            `;
+
+            // Members list
+            const listEl = document.getElementById("members-list");
+            if (!listEl) return;
+
+            if (group.members.length === 0) {
+                listEl.innerHTML = `
+                    <div class="card text-center" style="padding: 60px 30px;">
+                        <p style="color: var(--muted); margin-bottom: 20px;">No members yet. Add the first one to get started.</p>
+                        <button class="btn" onclick="openAddMember()"><i class="fas fa-user-plus"></i> Add First Member</button>
+                    </div>
+                `;
+            } else {
+                listEl.innerHTML = "";
+                group.members.forEach((m, index) => {
+                    const paid = memberPaid(m.id, group);
+                    const isPaid = paid >= group.contribution;
+                    const received = m.received;
+                    const isNext = index === group.currentTurnIndex && !received;
+
+                    const avatarClass = received ? "paid" : isPaid ? "paid" : "pending";
+                    const statusBadge = received ?
+                        `<span class="badge gold"><i class="fas fa-check"></i> Received</span>` :
+                        isNext ?
+                        `<span class="badge gold"><i class="fas fa-hourglass-half"></i> Next</span>` :
+                        isPaid ?
+                        `<span class="badge green"><i class="fas fa-check"></i> Paid</span>` :
+                        `<span class="badge red"><i class="fas fa-clock"></i> Pending</span>`;
+
+                    const row = document.createElement("div");
+                    row.className = "member-row";
+                    row.innerHTML = `
+                        <div class="member-avatar ${avatarClass}">${initials(m.name)}</div>
+                        <div class="member-info">
+                            <h4>${m.name}</h4>
+                            <small>Position ${index + 1} · ${formatPula(paid)} / ${formatPula(group.contribution)}</small>
+                        </div>
+                        <div>${statusBadge}</div>
+                        <div class="member-actions">
+                            <button class="btn btn-sm" onclick="openRecordPayment('${m.id}')">
+                                <i class="fas fa-plus"></i> Pay
+                            </button>
+                            ${isNext ? `<button class="btn btn-sm btn-outline" onclick="markReceived('${m.id}')"><i class="fas fa-check"></i> Received</button>` : ""}
+                            <button class="btn btn-sm btn-danger" onclick="deleteMember('${m.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    listEl.appendChild(row);
+                });
+            }
+
+            // Payments table
+            const payBody = document.getElementById("payments-body");
+            if (!payBody) return;
+
+            const sortedPayments = [...group.payments].sort((a, b) => new Date(b.date) - new Date(a.date));
+            if (sortedPayments.length === 0) {
+                payBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--muted); padding: 40px;">No payments recorded yet</td></tr>`;
+            } else {
+                payBody.innerHTML = sortedPayments.map(p => {
+                    const member = group.members.find(m => m.id === p.memberId);
+                    return `
+                        <tr>
+                            <td><strong>${member ? member.name : 'Unknown'}</strong></td>
+                            <td style="color: var(--gold); font-family: var(--mono); font-weight: 700;">${formatPula(p.amount)}</td>
+                            <td style="font-family: var(--mono); font-size: 0.82rem; color: var(--muted);">${formatDate(p.date)}</td>
+                            <td style="text-transform: capitalize; color: var(--muted);">${p.method}</td>
+                            <td style="text-align: right;">
+                                <button class="btn btn-sm btn-danger" onclick="deletePayment('${p.id}')">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        function deletePayment(paymentId) {
+            const group = getActiveGroup();
+            if (!group) return;
+            if (!confirm("Delete this payment record?")) return;
+            group.payments = group.payments.filter(p => p.id !== paymentId);
+            saveStore();
+            showToast("Payment deleted", "success");
+            renderGroupPage();
+        }
+
+        /* Update renderAll to only re-render the group page if it exists */
+        document.addEventListener("DOMContentLoaded", renderGroupPage);
+        window.renderGroupPage = renderGroupPage;
+    </script>
+</body>
+</html>
