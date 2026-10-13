@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports — Motshelo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="container nav">
+            <a href="index.html" class="logo">
+                <div class="logo-mark"><i class="fas fa-circle-notch"></i></div>
+                Mot<span>shelo</span>
+            </a>
+            <nav class="nav-links">
+                <a href="index.html">Dashboard</a>
+                <a href="create.html">New Group</a>
+                <a href="report.html" class="active">Reports</a>
+                <a href="about.html">About</a>
+            </nav>
+            <div class="nav-actions">
+                <button class="btn" onclick="window.print()">
+                    <i class="fas fa-print"></i> Print
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section style="padding: 60px 0;">
+            <div class="container">
+                <div id="report-content"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3>Mot<span>shelo</span></h3>
+                    <p>Digitising Botswana's savings culture. Built in Gaborone.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="index.html">Dashboard</a></li>
+                        <li><a href="report.html">Reports</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Help</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Privacy</a></li>
+                        <li><a href="#">Terms</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© 2026 Motshelo</span>
+                <span>Built in Botswana</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+    <script>
+        function renderReport() {
+            const container = document.getElementById("report-content");
+            if (!container) return;
+
+            if (store.groups.length === 0) {
+                container.innerHTML = `
+                    <div class="card text-center" style="padding: 80px 30px;">
+                        <i class="fas fa-file-invoice" style="font-size: 3rem; color: var(--muted); margin-bottom: 20px;"></i>
+                        <h2 style="font-size: 1.5rem; margin-bottom: 12px;">No Reports Yet</h2>
+                        <p style="color: var(--muted); margin-bottom: 24px;">Create a group and record payments to generate an income report.</p>
+                        <button class="btn" onclick="openCreateGroup()"><i class="fas fa-plus"></i> Create Group</button>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <div class="section-header">
+                    <span class="section-label">Savings Report</span>
+                    <h2 class="section-title">Proof of <em>savings.</em></h2>
+                    <p class="section-sub">Shareable report to show to banks, landlords, or anyone who needs proof of savings history.</p>
+                </div>
+            `;
+
+            store.groups.forEach(group => {
+                const collected = totalCollected(group);
+                const expected = group.members.length * group.contribution;
+                const paidMembers = group.members.filter(m => memberPaid(m.id, group) >= group.contribution).length;
+                const completion = expected > 0 ? Math.round((collected / expected) * 100) : 0;
+                const consistency = group.payments.length > 0 ? "Strong" : "Building";
+
+                html += `
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div class="grid-2" style="align-items: start;">
+                            <div>
+                                <h3 class="card-title">${group.name}</h3>
+                                <span class="card-sub">Report generated ${formatDate(new Date())}</span>
+                                <div style="margin-top: 20px;">
+                                    <div class="group-meta" style="border-top:none;">
+                                        <span>Group Created</span>
+                                        <strong style="color:var(--text); font-family:var(--sans);">${formatDate(group.createdAt)}</strong>
+                                    </div>
+                                    <div class="group-meta" style="border-top:none;">
+                                        <span>Contribution Cycle</span>
+                                        <strong style="color:var(--text); font-family:var(--sans); text-transform:capitalize;">${formatPula(group.contribution)} / ${group.frequency}</strong>
+                                    </div>
+                                    <div class="group-meta" style="border-top:none;">
+                                        <span>Total Members</span>
+                                        <strong style="color:var(--text); font-family:var(--sans);">${group.members.length}</strong>
+                                    </div>
+                                    <div class="group-meta" style="border-top:none;">
+                                        <span>Total Payments Recorded</span>
+                                        <strong style="color:var(--text); font-family:var(--sans);">${group.payments.length}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="stat-card gold" style="background: var(--gold-soft); border-color: rgba(232, 180, 74, 0.3);">
+                                    <span class="stat-label">Total Savings</span>
+                                    <div class="stat-value gold">${formatPula(collected)}</div>
+                                </div>
+                                <div class="stat-card" style="margin-top: 12px;">
+                                    <span class="stat-label">Completion Rate</span>
+                                    <div class="stat-value">${completion}%</div>
+                                </div>
+                                <div class="stat-card" style="margin-top: 12px;">
+                                    <span class="stat-label">Consistency</span>
+                                    <div class="stat-value green" style="font-size: 1.4rem;">${consistency}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4 style="font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-top: 32px; margin-bottom: 16px; font-weight: 700;">Member Contributions</h4>
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Member</th>
+                                        <th>Position</th>
+                                        <th>Total Paid</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${group.members.map((m, i) => {
+                                        const paid = memberPaid(m.id, group);
+                                        const isPaid = paid >= group.contribution;
+                                        const status = m.received ? "Received Payout" : isPaid ? "Paid Up" : "Pending";
+                                        const badgeClass = m.received ? "gold" : isPaid ? "green" : "red";
+                                        return `
+                                            <tr>
+                                                <td><strong>${m.name}</strong></td>
+                                                <td style="font-family: var(--mono); color: var(--muted);">#${i + 1}</td>
+                                                <td style="font-family: var(--mono); color: var(--gold); font-weight: 700;">${formatPula(paid)}</td>
+                                                <td><span class="badge ${badgeClass}">${status}</span></td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border); display:flex; gap:10px; flex-wrap:wrap;">
+                            <button class="btn" onclick="selectGroup('${group.id}'); window.location.href='group.html?id=${group.id}';">
+                                <i class="fas fa-arrow-right"></i> View Group
+                            </button>
+                            <button class="btn btn-outline" onclick="exportGroupCSV('${group.id}')">
+                                <i class="fas fa-download"></i> Export CSV
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function exportGroupCSV(groupId) {
+            const group = getGroup(groupId);
+            if (!group) return;
+
+            const rows = [["Member", "Contribution", "Date", "Method", "Note"]];
+            group.payments.forEach(p => {
+                const member = group.members.find(m => m.id === p.memberId);
+                rows.push([
+                    member ? member.name : "Unknown",
+                    p.amount.toFixed(2),
+                    p.date,
+                    p.method,
+                    p.note || ""
+                ]);
+            });
+
+            const csv = rows.map(r => r.map(c => `"${c}"`).join(",")).join("\n");
+            const blob = new Blob([csv], { type: "text/csv" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `motshelo-${group.name.replace(/\s+/g, '-').toLowerCase()}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast("CSV downloaded", "success");
+        }
+
+        document.addEventListener("DOMContentLoaded", renderReport);
+    </script>
+</body>
+</html>
