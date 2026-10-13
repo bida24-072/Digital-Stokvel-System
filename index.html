@@ -19,7 +19,6 @@
             </a>
             <nav class="nav-links">
                 <a href="index.html" class="active">Dashboard</a>
-                <a href="create.html">New Group</a>
                 <a href="report.html">Reports</a>
                 <a href="about.html">About</a>
             </nav>
@@ -33,30 +32,22 @@
 
     <main>
 
-        <!-- HERO / EMPTY STATE -->
         <section class="hero" id="hero" style="display:none;">
             <div class="container hero-inner">
                 <div class="hero-eyebrow">
                     <span class="dot"></span> Digital Stokvel System
                 </div>
-                <h1>
-                    Motshelo, <em>done properly.</em>
-                </h1>
-                <p>
-                    Track contributions. Rotate payouts. End disputes. Build proof of savings that banks actually accept.
-                </p>
+                <h1>Motshelo, <em>done properly.</em></h1>
+                <p>Track contributions. Rotate payouts. End disputes. Build proof of savings that banks actually accept.</p>
                 <div class="hero-actions">
                     <button class="btn" onclick="openCreateGroup()">
                         <i class="fas fa-plus"></i> Create Your First Group
                     </button>
-                    <a href="about.html" class="btn btn-outline">
-                        How It Works
-                    </a>
+                    <a href="about.html" class="btn btn-outline">How It Works</a>
                 </div>
             </div>
         </section>
 
-        <!-- GROUPS LIST -->
         <section id="groups-section" style="padding-top: 60px;">
             <div class="container">
                 <div class="section-header">
@@ -64,7 +55,6 @@
                     <h2 class="section-title">Active <em>motshelos.</em></h2>
                     <p class="section-sub">Select a group to view members, contributions, and rotation schedule.</p>
                 </div>
-
                 <div class="grid-3" id="groups-grid"></div>
             </div>
         </section>
@@ -82,7 +72,6 @@
                     <h4>Product</h4>
                     <ul>
                         <li><a href="index.html">Dashboard</a></li>
-                        <li><a href="create.html">Create Group</a></li>
                         <li><a href="report.html">Reports</a></li>
                         <li><a href="about.html">About</a></li>
                     </ul>
@@ -136,7 +125,6 @@
                         </select>
                     </div>
                 </div>
-                <input type="hidden" id="g-cycle" value="">
                 <div class="modal-actions">
                     <button type="button" class="btn btn-outline" onclick="closeCreateGroup()">Cancel</button>
                     <button type="submit" class="btn"><i class="fas fa-check"></i> Create Group</button>
@@ -147,14 +135,10 @@
 
     <script src="main.js"></script>
     <script>
-        /* ============================================
-           RENDER — Landing & Groups List
-        ============================================ */
         function renderLanding() {
             const hero = document.getElementById("hero");
             const groupsGrid = document.getElementById("groups-grid");
             const groupsSection = document.getElementById("groups-section");
-
             if (!hero || !groupsGrid || !groupsSection) return;
 
             if (store.groups.length === 0) {
@@ -168,34 +152,24 @@
             groupsSection.style.display = "block";
             groupsGrid.innerHTML = "";
 
-            store.groups.forEach(group => {
+            store.groups.forEach(function(group) {
                 const members = group.members.length;
                 const collected = totalCollected(group);
                 const card = document.createElement("div");
                 card.className = "group-card";
-                card.onclick = () => { window.location.href = "group.html?id=" + group.id; };
-                card.innerHTML = `
-                    <h3>${group.name}</h3>
-                    <span class="sub">${group.frequency.charAt(0).toUpperCase() + group.frequency.slice(1)} · ${formatPula(group.contribution)}</span>
-                    <div class="group-meta">
-                        <span>Members</span>
-                        <strong>${members}</strong>
-                    </div>
-                    <div class="group-meta" style="border-top:none;padding-top:6px;margin-top:6px;">
-                        <span>Collected</span>
-                        <strong>${formatPula(collected)}</strong>
-                    </div>
-                    <div class="group-meta" style="border-top:none;padding-top:6px;margin-top:6px;">
-                        <span>Created</span>
-                        <strong>${formatDate(group.createdAt)}</strong>
-                    </div>
-                `;
+                card.onclick = function() {
+                    window.location.href = "group.html?id=" + group.id;
+                };
+                card.innerHTML =
+                    '<h3>' + group.name + '</h3>' +
+                    '<span class="sub">' + group.frequency.charAt(0).toUpperCase() + group.frequency.slice(1) + ' · ' + formatPula(group.contribution) + '</span>' +
+                    '<div class="group-meta"><span>Members</span><strong>' + members + '</strong></div>' +
+                    '<div class="group-meta" style="border-top:none;padding-top:6px;margin-top:6px;"><span>Collected</span><strong>' + formatPula(collected) + '</strong></div>' +
+                    '<div class="group-meta" style="border-top:none;padding-top:6px;margin-top:6px;"><span>Created</span><strong>' + formatDate(group.createdAt) + '</strong></div>';
                 groupsGrid.appendChild(card);
             });
         }
-
         document.addEventListener("DOMContentLoaded", renderLanding);
-        window.renderLanding = renderLanding;
     </script>
 </body>
 </html>
