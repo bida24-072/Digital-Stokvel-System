@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About — Motshelo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="container nav">
+            <a href="index.html" class="logo">
+                <div class="logo-mark"><i class="fas fa-circle-notch"></i></div>
+                Mot<span>shelo</span>
+            </a>
+            <nav class="nav-links">
+                <a href="index.html">Dashboard</a>
+                <a href="create.html">New Group</a>
+                <a href="report.html">Reports</a>
+                <a href="about.html" class="active">About</a>
+            </nav>
+            <div class="nav-actions">
+                <button class="btn" onclick="window.location.href='index.html'">
+                    <i class="fas fa-arrow-right"></i> Get Started
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+
+        <section style="padding: 100px 0 60px;">
+            <div class="container">
+                <div class="section-header center">
+                    <span class="section-label">About Motshelo</span>
+                    <h1 style="font-family: var(--display); font-size: clamp(2rem, 6vw, 4.5rem); line-height: 1; letter-spacing: -0.03em; margin-bottom: 24px;">
+                        The digital home<br>for Botswana's <em style="font-style: italic; color: var(--gold);">savings culture.</em>
+                    </h1>
+                    <p class="section-sub" style="margin: 0 auto;">
+                        Millions of Batswana save together through motshelo. We built the tool that makes it work — properly, transparently, and with proof.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section style="padding-top: 40px;">
+            <div class="container">
+                <div class="grid-2" style="gap: 60px;">
+                    <div>
+                        <span class="section-label">The Problem</span>
+                        <h2 class="section-title">What's broken.</h2>
+                        <p style="color: var(--muted); line-height: 1.8; margin-bottom: 20px;">
+                            Motshelo groups have run for generations on trust and a notebook. But the same issues keep hurting families across Botswana.
+                        </p>
+                        <ul style="display:flex; flex-direction:column; gap:16px; margin-top: 24px;">
+                            <li style="display:flex; gap:14px; align-items:flex-start;">
+                                <i class="fas fa-circle-xmark" style="color: var(--red); margin-top: 4px;"></i>
+                                <div>
+                                    <strong style="color: var(--text);">No record</strong>
+                                    <p style="color: var(--muted); font-size: 0.92rem; margin-top: 4px;">Nobody knows who paid and who didn't. Cash gets lost. Notebooks get damaged.</p>
+                                </div>
+                            </li>
+                            <li style="display:flex; gap:14px; align-items:flex-start;">
+                                <i class="fas fa-circle-xmark" style="color: var(--red); margin-top: 4px;"></i>
+                                <div>
+                                    <strong style="color: var(--text);">Disputes break groups</strong>
+                                    <p style="color: var(--muted); font-size: 0.92rem; margin-top: 4px;">"I already paid" vs "no you didn't." Groups dissolve. Friendships end.</p>
+                                </div>
+                            </li>
+                            <li style="display:flex; gap:14px; align-items:flex-start;">
+                                <i class="fas fa-circle-xmark" style="color: var(--red); margin-top: 4px;"></i>
+                                <div>
+                                    <strong style="color: var(--text);">No proof of savings</strong>
+                                    <p style="color: var(--muted); font-size: 0.92rem; margin-top: 4px;">When a member tries to get a loan, the bank won't accept "I'm in a stokvel."</p>
+                                </div>
+                            </li>
+                            <li style="display:flex; gap:14px; align-items:flex-start;">
+                                <i class="fas fa-circle-xmark" style="color: var(--red); margin-top: 4px;"></i>
+                                <div>
+                                    <strong style="color: var(--text);">Treasurer burnout</strong>
+                                    <p style="color: var(--muted); font-size: 0.92rem; margin-top: 4px;">One person holds all the stress. If they lose the book, everything falls apart.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <span class="section-label">The Solution</span>
+                        <h2 class="section-title">What we built.</h2>
+                        <p style="color: var(--muted); line-height: 1.8; margin-bottom: 20px;">
+                            Motshelo is a digital savings system designed specifically for Botswana's savings groups. No bank account required. No internet required. Works on any phone.
+                        </p>
+                        <ul style="display:flex; flex-direction:column; gap:16px; margin-top: 24px;">
+                            <li style="display:flex; gap:14px; align-items:flex-start;">
+                                <i class="fas fa-circle-check" style="color: var(--green); margin-top: 4px;"></i>
+                                <div>
+                                    <strong style="color: var(--text);">Every payment recorded</strong>
+                                    <p style="color: var(--muted); font-size: 0.92rem; margin-top: 4px;">Date, amount, method, and note. Visible to the whole group. No arguing.</p>
+                                </div>
+                            </li>
+                            <li style="display:flex; gap:14px; align-items:flex-start;">
+                                <i class="fas fa-circle-check" style="color: var(--green); margin-top: 4px;"></i>
+                                <div>
+                                    <strong style="color: var(--text);">Automatic rotation</strong>
+                                    <p style="color: var(--muted); font-size: 0.92rem; margin-top: 4px;">Whose turn is next is always clear. Marking someone as "received" moves the cycle forward.</p>
+                                </div>
+                            </li>
+                            <li style="display:flex; gap:14px; align-items:flex-start;">
+                                <i class="fas fa-circle-check" style="color: var(--green); margin-top: 4px;"></i>
+                                <div>
+                                    <strong style="color: var(--text);">Proof of savings</strong>
+                                    <p style="color: var(--muted); font-size: 0.92rem; margin-top: 4px;">Every member can generate a report showing their real savings history. Ready for banks, landlords, or anyone.</p>
+                                </div>
+                            </li>
+                            <li style="display:flex; gap:14px; align-items:flex-start;">
+                                <i class="fas fa-circle-check" style="color: var(--green); margin-top: 4px;"></i>
+                                <div>
+                                    <strong style="color: var(--text);">No treasurer burden</strong>
+                                    <p style="color: var(--muted); font-size: 0.92rem; margin-top: 4px;">Anyone in the group can record a payment. No single point of failure.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section style="padding: 80px 0; background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+            <div class="container">
+                <div class="section-header center">
+                    <span class="section-label">How It Works</span>
+                    <h2 class="section-title">Four <em>simple steps.</em></h2>
+                </div>
+                <div class="grid-4">
+                    <div class="card">
+                        <div style="font-family: var(--display); font-size: 2.5rem; color: var(--gold); font-style: italic; line-height: 1; margin-bottom: 16px;">01</div>
+                        <h3 class="card-title">Create a Group</h3>
+                        <p style="color: var(--muted); font-size: 0.92rem;">Set the name, contribution amount, and frequency. Done in 30 seconds.</p>
+                    </div>
+                    <div class="card">
+                        <div style="font-family: var(--display); font-size: 2.5rem; color: var(--gold); font-style: italic; line-height: 1; margin-bottom: 16px;">02</div>
+                        <h3 class="card-title">Add Members</h3>
+                        <p style="color: var(--muted); font-size: 0.92rem;">Each member is added to the rotation. Their payout position is set automatically.</p>
+                    </div>
+                    <div class="card">
+                        <div style="font-family: var(--display); font-size: 2.5rem; color: var(--gold); font-style: italic; line-height: 1; margin-bottom: 16px;">03</div>
+                        <h3 class="card-title">Record Payments</h3>
+                        <p style="color: var(--muted); font-size: 0.92rem;">Log every contribution as it happens. Everyone sees the same numbers.</p>
+                    </div>
+                    <div class="card">
+                        <div style="font-family: var(--display); font-size: 2.5rem; color: var(--gold); font-style: italic; line-height: 1; margin-bottom: 16px;">04</div>
+                        <h3 class="card-title">Build Proof</h3>
+                        <p style="color: var(--muted); font-size: 0.92rem;">After a few cycles, every member has a real savings report they can show anyone.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section style="padding: 100px 0; text-align: center;">
+            <div class="container">
+                <span class="section-label">Get Started</span>
+                <h2 style="font-family: var(--display); font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1; letter-spacing: -0.03em; margin-bottom: 20px;">
+                    Ready to run your<br>motshelo <em style="font-style: italic; color: var(--gold);">properly?</em>
+                </h2>
+                <p style="color: var(--muted); max-width: 500px; margin: 0 auto 40px;">
+                    Create your first group in 30 seconds. Free for groups up to 10 members.
+                </p>
+                <button class="btn" onclick="window.location.href='index.html'">
+                    <i class="fas fa-plus"></i> Create a Group
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3>Mot<span>shelo</span></h3>
+                    <p>Digitising Botswana's savings culture. Built in Gaborone. Designed for the way we save together.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="index.html">Dashboard</a></li>
+                        <li><a href="report.html">Reports</a></li>
+                        <li><a href="about.html">About</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Help Centre</a></li>
+                        <li><a href="#">WhatsApp</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Privacy</a></li>
+                        <li><a href="#">Terms</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© 2026 Motshelo</span>
+                <span>Built in Botswana</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+</html>
