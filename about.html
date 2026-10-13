@@ -18,14 +18,11 @@
             </a>
             <nav class="nav-links">
                 <a href="index.html">Dashboard</a>
-                <a href="create.html">New Group</a>
                 <a href="report.html">Reports</a>
                 <a href="about.html" class="active">About</a>
             </nav>
             <div class="nav-actions">
-                <button class="btn" onclick="window.location.href='index.html'">
-                    <i class="fas fa-arrow-right"></i> Get Started
-                </button>
+                <a href="index.html" class="btn"><i class="fas fa-arrow-right"></i> Get Started</a>
             </div>
         </div>
     </header>
@@ -104,6 +101,13 @@
                             <li style="display:flex; gap:14px; align-items:flex-start;">
                                 <i class="fas fa-circle-check" style="color: var(--green); margin-top: 4px;"></i>
                                 <div>
+                                    <strong style="color: var(--text);">Proof of payment uploads</strong>
+                                    <p style="color: var(--muted); font-size: 0.92rem; margin-top: 4px;">Members upload screenshots from Orange Money, MyZaka, or receipts. Treasurer approves.</p>
+                                </div>
+                            </li>
+                            <li style="display:flex; gap:14px; align-items:flex-start;">
+                                <i class="fas fa-circle-check" style="color: var(--green); margin-top: 4px;"></i>
+                                <div>
                                     <strong style="color: var(--text);">Automatic rotation</strong>
                                     <p style="color: var(--muted); font-size: 0.92rem; margin-top: 4px;">Whose turn is next is always clear. Marking someone as "received" moves the cycle forward.</p>
                                 </div>
@@ -113,13 +117,6 @@
                                 <div>
                                     <strong style="color: var(--text);">Proof of savings</strong>
                                     <p style="color: var(--muted); font-size: 0.92rem; margin-top: 4px;">Every member can generate a report showing their real savings history. Ready for banks, landlords, or anyone.</p>
-                                </div>
-                            </li>
-                            <li style="display:flex; gap:14px; align-items:flex-start;">
-                                <i class="fas fa-circle-check" style="color: var(--green); margin-top: 4px;"></i>
-                                <div>
-                                    <strong style="color: var(--text);">No treasurer burden</strong>
-                                    <p style="color: var(--muted); font-size: 0.92rem; margin-top: 4px;">Anyone in the group can record a payment. No single point of failure.</p>
                                 </div>
                             </li>
                         </ul>
@@ -148,7 +145,7 @@
                     <div class="card">
                         <div style="font-family: var(--display); font-size: 2.5rem; color: var(--gold); font-style: italic; line-height: 1; margin-bottom: 16px;">03</div>
                         <h3 class="card-title">Record Payments</h3>
-                        <p style="color: var(--muted); font-size: 0.92rem;">Log every contribution as it happens. Everyone sees the same numbers.</p>
+                        <p style="color: var(--muted); font-size: 0.92rem;">Log every contribution as it happens. Attach proof if you want treasurer approval.</p>
                     </div>
                     <div class="card">
                         <div style="font-family: var(--display); font-size: 2.5rem; color: var(--gold); font-style: italic; line-height: 1; margin-bottom: 16px;">04</div>
@@ -168,9 +165,7 @@
                 <p style="color: var(--muted); max-width: 500px; margin: 0 auto 40px;">
                     Create your first group in 30 seconds. Free for groups up to 10 members.
                 </p>
-                <button class="btn" onclick="window.location.href='index.html'">
-                    <i class="fas fa-plus"></i> Create a Group
-                </button>
+                <a href="index.html" class="btn"><i class="fas fa-plus"></i> Create a Group</a>
             </div>
         </section>
 
