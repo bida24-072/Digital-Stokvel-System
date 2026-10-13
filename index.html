@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motshelo — Digital Stokvel System</title>
+    <meta name="description" content="Motshelo — a digital stokvel system for Botswana savings groups. Track contributions, rotations, and payouts — with proof of savings for banks.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="container nav">
+            <a href="index.html" class="logo">
+                <div class="logo-mark"><i class="fas fa-circle-notch"></i></div>
+                Mot<span>shelo</span>
+            </a>
+            <nav class="nav-links">
+                <a href="index.html" class="active">Dashboard</a>
+                <a href="create.html">New Group</a>
+                <a href="report.html">Reports</a>
+                <a href="about.html">About</a>
+            </nav>
+            <div class="nav-actions">
+                <button class="btn" onclick="openCreateGroup()">
+                    <i class="fas fa-plus"></i> New Group
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- HERO / EMPTY STATE -->
+        <section class="hero" id="hero" style="display:none;">
+            <div class="container hero-inner">
+                <div class="hero-eyebrow">
+                    <span class="dot"></span> Digital Stokvel System
+                </div>
+                <h1>
+                    Motshelo, <em>done properly.</em>
+                </h1>
+                <p>
+                    Track contributions. Rotate payouts. End disputes. Build proof of savings that banks actually accept.
+                </p>
+                <div class="hero-actions">
+                    <button class="btn" onclick="openCreateGroup()">
+                        <i class="fas fa-plus"></i> Create Your First Group
+                    </button>
+                    <a href="about.html" class="btn btn-outline">
+                        How It Works
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- GROUPS LIST -->
+        <section id="groups-section" style="padding-top: 60px;">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-label">Your Groups</span>
+                    <h2 class="section-title">Active <em>motshelos.</em></h2>
+                    <p class="section-sub">Select a group to view members, contributions, and rotation schedule.</p>
+                </div>
+
+                <div class="grid-3" id="groups-grid"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3>Mot<span>shelo</span></h3>
+                    <p>Digitising Botswana's savings culture. Built in Gaborone. Designed for the way we save together.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="index.html">Dashboard</a></li>
+                        <li><a href="create.html">Create Group</a></li>
+                        <li><a href="report.html">Reports</a></li>
+                        <li><a href="about.html">About</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Help Centre</a></li>
+                        <li><a href="#">WhatsApp</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Privacy</a></li>
+                        <li><a href="#">Terms</a></li>
+                        <li><a href="#">Data Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© 2026 Motshelo</span>
+                <span>Built in Botswana</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- CREATE GROUP MODAL -->
+    <div class="modal-overlay" id="create-group-modal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeCreateGroup()"><i class="fas fa-times"></i></button>
+            <h2>Create a Motshelo</h2>
+            <p class="modal-sub">Set up a new savings group. You can add members and record payments immediately after.</p>
+            <form onsubmit="createGroup(event)">
+                <div class="form-group">
+                    <label>Group Name</label>
+                    <input type="text" id="g-name" required placeholder="e.g. Kasi Stokvel">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Contribution Amount (Pula)</label>
+                        <input type="number" step="0.01" min="1" id="g-contribution" required placeholder="e.g. 500">
+                    </div>
+                    <div class="form-group">
+                        <label>Frequency</label>
+                        <select id="g-frequency" required>
+                            <option value="weekly">Weekly</option>
+                            <option value="fortnightly">Fortnightly</option>
+                            <option value="monthly" selected>Monthly</option>
+                        </select>
+                    </div>
+                </div>
+                <input type="hidden" id="g-cycle" value="">
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeCreateGroup()">Cancel</button>
+                    <button type="submit" class="btn"><i class="fas fa-check"></i> Create Group</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+    <script>
+        /* ============================================
+           RENDER — Landing & Groups List
+        ============================================ */
+        function renderLanding() {
+            const hero = document.getElementById("hero");
+            const groupsGrid = document.getElementById("groups-grid");
+            const groupsSection = document.getElementById("groups-section");
+
+            if (!hero || !groupsGrid || !groupsSection) return;
+
+            if (store.groups.length === 0) {
+                hero.style.display = "block";
+                groupsGrid.innerHTML = "";
+                groupsSection.style.display = "none";
+                return;
+            }
+
+            hero.style.display = "none";
+            groupsSection.style.display = "block";
+            groupsGrid.innerHTML = "";
+
+            store.groups.forEach(group => {
+                const members = group.members.length;
+                const collected = totalCollected(group);
+                const card = document.createElement("div");
+                card.className = "group-card";
+                card.onclick = () => { window.location.href = "group.html?id=" + group.id; };
+                card.innerHTML = `
+                    <h3>${group.name}</h3>
+                    <span class="sub">${group.frequency.charAt(0).toUpperCase() + group.frequency.slice(1)} · ${formatPula(group.contribution)}</span>
+                    <div class="group-meta">
+                        <span>Members</span>
+                        <strong>${members}</strong>
+                    </div>
+                    <div class="group-meta" style="border-top:none;padding-top:6px;margin-top:6px;">
+                        <span>Collected</span>
+                        <strong>${formatPula(collected)}</strong>
+                    </div>
+                    <div class="group-meta" style="border-top:none;padding-top:6px;margin-top:6px;">
+                        <span>Created</span>
+                        <strong>${formatDate(group.createdAt)}</strong>
+                    </div>
+                `;
+                groupsGrid.appendChild(card);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", renderLanding);
+        window.renderLanding = renderLanding;
+    </script>
+</body>
+</html>
